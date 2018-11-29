@@ -33,7 +33,7 @@ def training():
     train_set=numpy.zeros(shape=(1500*5,5))
     k=0
     label=[]
-    filedir = './DataSet/trainset'
+    filedir = 'D:/ANN/DataSet/trainset'
     for file in os.listdir(filedir):
         if fnmatch(file, '*.jpg'):
             img_name = file
@@ -44,8 +44,8 @@ def training():
                 train_set[k*5+i]=feature(im[5:24,i*24+5:i*24+17])
                 label.append(int(img_name.split('.')[0][i]))
             k=k+1
-    numpy.save("./DataSet/train_label.npy",label)
-    numpy.save("./DataSet/train_set.npy",train_set)
+    numpy.save("D:/ANN/DataSet/train_label.npy",label)
+    numpy.save("D:/ANN/DataSet/train_set.npy",train_set)
     return train_set,label
 
 def clear_border(img):
@@ -172,7 +172,7 @@ def interference_point(img, x = 0, y = 0):
 def _get_dynamic_binary_image(filedir, img_name):
   '''自适应阀值二值化'''
   img_name = filedir + '/' + img_name
-  print('.....' + img_name)
+  #print('.....' + img_name)
   im = cv2.imread(img_name)
   im = cv2.cvtColor(im,cv2.COLOR_RGB2GRAY)
   th1 = cv2.adaptiveThreshold(im, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 1)
@@ -184,11 +184,11 @@ def main(k,setting=0):
     if setting:
         train_set,label=training()
     else:
-        train_set=numpy.load("./DataSet/train_set.npy")
-        label=numpy.load("./DataSet/train_label.npy")
+        train_set=numpy.load("D:/ANN/DataSet/train_set.npy")
+        label=numpy.load("D:/ANN/DataSet/train_label.npy")
     KNN=KNeighborsClassifier(n_neighbors=k)
     KNN.fit(train_set, label)
-    filedir = './DataSet/testset'
+    filedir = 'D:/ANN/DataSet/testset'
     for file in os.listdir(filedir):
         if fnmatch(file, '*.jpg'):
             img_name = file
@@ -199,10 +199,12 @@ def main(k,setting=0):
             result=KNN.predict(AF)
             for i in range(5):
                 res=result[i]*(10**(4-i))+res
-            print('Predict：',res,'Label：',img_name.split('.')[0])
+            #print('Predict：',res,'Label：',img_name.split('.')[0])
             if res==int(img_name.split('.')[0]):
                 corrnum=corrnum+1
+            else:
+                print(img_name.split('.')[0],res)
             allnum=allnum+1
             res=0
     print(corrnum/allnum*100)
-main(13,0)
+main(13,1)
