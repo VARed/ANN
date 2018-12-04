@@ -199,12 +199,9 @@ def main(k,setting=0):
             result=KNN.predict(AF)
             for i in range(5):
                 res=result[i]*(10**(4-i))+res
-            #print('Predict：',res,'Label：',img_name.split('.')[0])
             if res==int(img_name.split('.')[0]):
                 corrnum=corrnum+1
-            else:
-                print(img_name.split('.')[0],res)
             allnum=allnum+1
             res=0
     print(corrnum/allnum*100)
-main(13,1)
+main(13,0)
