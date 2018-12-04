@@ -10,10 +10,20 @@ class Dataset():
     #code_num:验证码数量
     #feature_set: 1 提取局部特征  0 不提取局部特征
     #feature_num: 特征数量
-    def __init__(self,filedir,content,num,feature_set=1,feature_num=5,code_num=5):
+    #maxy:纵向上边界
+    #miny:纵向下边界
+    #minx:横向起始位置
+    #maxx:横向结束位置
+    #distance:每个字符相差距离
+    def __init__(self,filedir,content,num,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24):
         self.filedir=filedir
         self.content=content
         self.num=num
+        self.maxy=maxy
+        self.miny=miny
+        self.maxx=maxx
+        self.minx =minx
+        self.distance = distance
         self.feature_set=feature_set
         self.feature_num = feature_num
         self.code_num=code_num
@@ -28,15 +38,9 @@ class Dataset():
         A5 = A[midy - 1:midy + 2, midx - 1:midx + 2].mean()
         AF = [A1, A2, A3, A4, A5]
         return AF
-    # 切割图片并返回每个子图片特征
-    def incise(self,im):
-        AF = []
-        for i in range(5):
-            AF.append(self.feature(im[5:24, i * 24 + 5:i * 24 + 17]))
-        return AF
     # 训练已知图片的特征
     def data(self):
-        data_set = numpy.zeros(shape=(self.num * 5, 5))
+        data_set = numpy.zeros(shape=(self.num * self.code_num, self.feature_num))
         k = 0
         label = []
         file_dir = self.filedir+self.content+'set'
@@ -46,8 +50,8 @@ class Dataset():
                 im = self._get_dynamic_binary_image(file_dir, img_name)
                 im = self.interference_line(im)
                 im = self.interference_point(im)
-                for i in range(5):
-                    data_set[k * 5 + i] = self.feature(im[5:24, i * 24 + 5:i * 24 + 17])
+                for i in range(self.code_num):
+                    data_set[k * self.code_num + i] = self.feature(im[self.miny:self.maxy, i * self.distance+ self.minx:i * self.distance+ self.maxx])
                     label.append(int(img_name.split('.')[0][i]))
                 k = k + 1
         numpy.save(self.filedir+self.content+'_label.npy', label)
@@ -168,3 +172,5 @@ class Dataset():
         im = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         th1 = cv2.adaptiveThreshold(im, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 1)
         return th1
+Test= Dataset('D:/ANN/DataSet/', 'test', 500)
+Test.data()
