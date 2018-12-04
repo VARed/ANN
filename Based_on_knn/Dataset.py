@@ -3,7 +3,7 @@ import os
 from fnmatch import fnmatch
 import cv2
 class Dataset():
-    # 初始化神经网络
+    # 采集数据
     #filedir:文件路径
     #content: 'train'/'test'
     #num:数据数量
@@ -25,7 +25,10 @@ class Dataset():
         self.minx =minx
         self.distance = distance
         self.feature_set=feature_set
-        self.feature_num = feature_num
+        if feature_set==0:
+            self.feature_num=(maxy-miny)*(maxx-minx)
+        else:
+            self.feature_num = feature_num
         self.code_num=code_num
     def feature(self, A):
         midx = int(A.shape[1] / 2) + 1
@@ -51,7 +54,10 @@ class Dataset():
                 im = self.interference_line(im)
                 im = self.interference_point(im)
                 for i in range(self.code_num):
-                    data_set[k * self.code_num + i] = self.feature(im[self.miny:self.maxy, i * self.distance+ self.minx:i * self.distance+ self.maxx])
+                    if self.feature_set:
+                        data_set[k * self.code_num + i] = self.feature(im[self.miny:self.maxy, i * self.distance+ self.minx:i * self.distance+ self.maxx])
+                    else:
+                        data_set[k * self.code_num + i] = im[self.miny:self.maxy, i * self.distance + self.minx:i * self.distance + self.maxx].flatten()
                     label.append(int(img_name.split('.')[0][i]))
                 k = k + 1
         numpy.save(self.filedir+self.content+'_label.npy', label)
@@ -172,5 +178,3 @@ class Dataset():
         im = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         th1 = cv2.adaptiveThreshold(im, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 1)
         return th1
-Test= Dataset('D:/ANN/DataSet/', 'test', 500)
-Test.data()

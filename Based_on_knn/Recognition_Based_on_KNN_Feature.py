@@ -12,9 +12,9 @@ def main(k,setting=0):
     error=1
     corr=0
     if setting:
-        Train=Dataset('D:/ANN/DataSet/','train',1500)
+        Train=Dataset('D:/ANN/DataSet/','train',1500,feature_set=1)
         Train.data()
-        Test= Dataset('D:/ANN/DataSet/', 'test', 500)
+        Test= Dataset('D:/ANN/DataSet/', 'test', 500,feature_set=1)
         Test.data()
     train_set=numpy.load("D:/ANN/DataSet/train_set.npy")
     train_label=numpy.load("D:/ANN/DataSet/train_label.npy")

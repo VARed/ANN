@@ -83,7 +83,7 @@ class BP_Network():
                 neuron['weights'][-1] += self.l_rate * neuron['responsibility']
 
     # 根据指定的训练周期训练网络
-    def train_network(self, train, label):
+    def train_network(self, train_set, label):
         for epoch in range(self.n_epoch):
             sum_error = 0
             for k in range(len(train_set)):
@@ -92,7 +92,7 @@ class BP_Network():
                 expected[label[k]] = 1
                 sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
                 self.backward_propagate_error(expected)
-                self._update_weights(train[k])
+                self._update_weights(train_set[k])
             print('>周期=%d, 误差=%.3f' % (epoch, sum_error))
 
     # 利用训练好的网络，预测“新”数据
@@ -138,14 +138,15 @@ def normalize_dataset(dataset):
     for row in dataset:
         for i in range(len(row)):
             row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
+            #row[i] = row[i] /255
 
 def main(setting=0):
     # 设置随机种子
     # 构建训练数据
     if setting:
-        Train = Dataset('D:/ANN/DataSet/', 'train', 1500)
+        Train = Dataset('D:/ANN/DataSet/', 'train', 1500,feature_set=1)
         Train.data()
-        Test = Dataset('D:/ANN/DataSet/', 'test', 500)
+        Test = Dataset('D:/ANN/DataSet/', 'test', 500,feature_set=1)
         Test.data()
     train_set = numpy.load("D:/ANN/DataSet/train_set.npy")
     train_label = numpy.load("D:/ANN/DataSet/train_label.npy")
@@ -158,7 +159,7 @@ def main(setting=0):
     n_hidden = 10
     n_outputs = 10
     BP = BP_Network(n_inputs, n_hidden, n_outputs, 0)
-    l_rate = 0.2
+    l_rate = 0.1
     n_epoch = 0
     BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch)
     numpy.save("D:/ANN/DataSet/weight_set.npy", BP.network)
