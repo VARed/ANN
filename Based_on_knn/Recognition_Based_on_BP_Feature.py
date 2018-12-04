@@ -9,8 +9,7 @@ from random import randrange
 from random import random
 from math import exp
 import numpy
-
-
+from Dataset import Dataset
 class BP_Network():
     # 初始化神经网络
     def __init__(self, n_inputs, n_hidden, n_outputs, setting):
@@ -122,7 +121,6 @@ class BP_Network():
                 correct = correct + 1
             error = 1
         return correct / float(len(actual) // 5) * 100.0
-
     # 用每一个交叉分割的块（训练集合，试集合）来评估BP算法
     def evaluate_algorithm(self, train_set, train_label, test_set, test_label, l_rate, n_epoch):
         self.l_rate = l_rate
@@ -135,17 +133,20 @@ class BP_Network():
         accuracy = self.accuracy_metric(test_label, predicted)
         print('整个验证码识别准确率为:', accuracy)
 
-
 def normalize_dataset(dataset):
     minmax = [[min(column), max(column)] for column in zip(*dataset)]
     for row in dataset:
         for i in range(len(row)):
             row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
 
-
-if __name__ == '__main__':
+def main(setting=0):
     # 设置随机种子
-    # 构建训练数据    
+    # 构建训练数据
+    if setting:
+        Train = Dataset('D:/ANN/DataSet/', 'train', 1500)
+        Train.data()
+        Test = Dataset('D:/ANN/DataSet/', 'test', 500)
+        Test.data()
     train_set = numpy.load("D:/ANN/DataSet/train_set.npy")
     train_label = numpy.load("D:/ANN/DataSet/train_label.npy")
     test_set = numpy.load("D:/ANN/DataSet/test_set.npy")
@@ -161,5 +162,5 @@ if __name__ == '__main__':
     n_epoch = 0
     BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch)
     numpy.save("D:/ANN/DataSet/weight_set.npy", BP.network)
-
+main(0)
 
