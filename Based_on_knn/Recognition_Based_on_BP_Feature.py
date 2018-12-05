@@ -5,14 +5,13 @@ Created on Tue Nov 27 22:44:52 2018
 @author: Administrator
 """
 
-from random import randrange
 from random import random
 from math import exp
 import numpy
 from Dataset import Dataset
 class BP_Network():
     # 初始化神经网络
-    def __init__(self, n_inputs, n_hidden, n_outputs, setting):
+    def __init__(self, n_inputs, n_hidden, n_outputs, filedir,setting):
         self.n_inputs = n_inputs
         self.n_hidden = n_hidden
         self.n_outputs = n_outputs
@@ -23,7 +22,7 @@ class BP_Network():
             output_layer = [{'weights': [random() for i in range(self.n_hidden + 1)]} for i in range(self.n_outputs)]
             self.network.append(output_layer)
         else:
-            self.network = numpy.load("D:/ANN/DataSet/weight_set.npy")
+            self.network = numpy.load(filedir+'weight_set.npy')
 
     # 计算神经元的激活值（加权之和）
     def activate(self, weights, inputs):
@@ -110,21 +109,21 @@ class BP_Network():
         return (predictions)
 
     # 用预测正确百分比来衡量正确率
-    def accuracy_metric(self, actual, predicted):
+    def accuracy_metric(self, actual, predicted,code_num):
         correct = 0
         error = 1
-        for i in range(len(actual) // 5):
-            for k in range(5):
-                if actual[i * 5 + k] != predicted[i * 5 + k]:
+        for i in range(len(actual) // code_num):
+            for k in range(code_num):
+                if actual[i * code_num + k] != predicted[i * code_num + k]:
                     error = 0
             if error:
                 correct = correct + 1
             else:
-                print([actual[i * 5 + k] for k in range(5)],[predicted[i * 5 + k] for k in range(5)])
+                print([actual[i * code_num + k] for k in range(code_num)],[predicted[i * code_num + k] for k in range(code_num)])
             error = 1
-        return correct / float(len(actual) // 5) * 100.0
+        return correct / float(len(actual) // code_num) * 100.0
     # 用每一个交叉分割的块（训练集合，试集合）来评估BP算法
-    def evaluate_algorithm(self, train_set, train_label, test_set, test_label, l_rate, n_epoch):
+    def evaluate_algorithm(self, train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num):
         self.l_rate = l_rate
         self.n_epoch = n_epoch
         self.train_set = train_set
@@ -132,38 +131,36 @@ class BP_Network():
         self.test_set = test_set
         self.test_label = test_label
         predicted = self.back_propagation(train_set, train_label, test_set)
-        accuracy = self.accuracy_metric(test_label, predicted)
+        accuracy = self.accuracy_metric(test_label, predicted,code_num)
         print('整个验证码识别准确率为:', accuracy)
 
 def normalize_dataset(dataset):
-    minmax = [[min(column), max(column)] for column in zip(*dataset)]
     for row in dataset:
         for i in range(len(row)):
-            row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
-            #row[i] = row[i] /255
+            row[i] = row[i] /255
 
-def main(setting=0):
+def main(filedir,setting=0):
     # 设置随机种子
     # 构建训练数据
     if setting:
-        Train = Dataset('D:/ANN/DataSet/', 'train', 1500,feature_set=1)
+        Train = Dataset(filedir, 'train', 1500,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
         Train.data()
-        Test = Dataset('D:/ANN/DataSet/', 'test', 500,feature_set=1)
+        Test = Dataset(filedir, 'test', 500,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
         Test.data()
-    train_set = numpy.load("D:/ANN/DataSet/train_set.npy")
-    train_label = numpy.load("D:/ANN/DataSet/train_label.npy")
-    test_set = numpy.load("D:/ANN/DataSet/train_set.npy")
-    test_label = numpy.load("D:/ANN/DataSet/train_label.npy")
+    train_set = numpy.load(filedir+'train_set.npy')
+    train_label = numpy.load(filedir+'train_label.npy')
+    test_set = numpy.load(filedir+'test_set.npy')
+    test_label = numpy.load(filedir+'test_label.npy')
     normalize_dataset(train_set)
     normalize_dataset(test_set)
     # 设置网络初始化参数
     n_inputs = len(train_set[0])
-    n_hidden = 10
+    n_hidden = 8
     n_outputs = 10
-    BP = BP_Network(n_inputs, n_hidden, n_outputs, 0)
-    l_rate = 0.1
-    n_epoch = 0
-    BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch)
-    numpy.save("D:/ANN/DataSet/weight_set.npy", BP.network)
-main(0)
+    BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=1)
+    l_rate = 1
+    n_epoch = 20
+    BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num=5)
+    numpy.save(filedir+'weight_set.npy', BP.network)
+main(setting=0,filedir='D:/ANN/DataSet/')
 
