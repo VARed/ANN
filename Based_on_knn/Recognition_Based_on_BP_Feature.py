@@ -119,6 +119,8 @@ class BP_Network():
                     error = 0
             if error:
                 correct = correct + 1
+            else:
+                print([actual[i * 5 + k] for k in range(5)],[predicted[i * 5 + k] for k in range(5)])
             error = 1
         return correct / float(len(actual) // 5) * 100.0
     # 用每一个交叉分割的块（训练集合，试集合）来评估BP算法
@@ -150,8 +152,8 @@ def main(setting=0):
         Test.data()
     train_set = numpy.load("D:/ANN/DataSet/train_set.npy")
     train_label = numpy.load("D:/ANN/DataSet/train_label.npy")
-    test_set = numpy.load("D:/ANN/DataSet/test_set.npy")
-    test_label = numpy.load("D:/ANN/DataSet/test_label.npy")
+    test_set = numpy.load("D:/ANN/DataSet/train_set.npy")
+    test_label = numpy.load("D:/ANN/DataSet/train_label.npy")
     normalize_dataset(train_set)
     normalize_dataset(test_set)
     # 设置网络初始化参数
