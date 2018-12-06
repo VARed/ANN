@@ -4,11 +4,14 @@ Created on Tue Nov 27 21:34:02 2018
 
 @author: Administrator
 """
+import datetime
 import numpy
 from sklearn.neighbors.classification import KNeighborsClassifier
 from Dataset import Dataset
 from sklearn.model_selection import train_test_split
 def main(filedir,k,setting=0):
+    starttime = datetime.datetime.now()
+    print('Start:\t\t' + starttime.strftime("%Y-%m-%d %X"))
     error=1
     corr=0
     if setting:
@@ -28,4 +31,8 @@ def main(filedir,k,setting=0):
             corr=corr+1
         error=1
     print('整个验证码识别准确率为:', corr/(len(result)//5)*100.0)
+    endtime = datetime.datetime.now()
+    print('End:\t\t' + endtime.strftime("%Y-%m-%d %X"))
+    duringtime = endtime - starttime
+    print('Spend Time:\t' + str(duringtime))
 main(k=13,setting=0,filedir='./DataSet/')

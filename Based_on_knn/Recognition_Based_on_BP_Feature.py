@@ -4,7 +4,7 @@ Created on Tue Nov 27 22:44:52 2018
 
 @author: Administrator
 """
-
+import datetime
 from random import random
 from math import exp
 import numpy
@@ -119,8 +119,8 @@ class BP_Network():
                     error = 0
             if error:
                 correct = correct + 1
-            else:
-                print([actual[i * code_num + k] for k in range(code_num)],[predicted[i * code_num + k] for k in range(code_num)])
+            #else:
+                #print([actual[i * code_num + k] for k in range(code_num)],[predicted[i * code_num + k] for k in range(code_num)])
             error = 1
         return correct / float(len(actual) // code_num) * 100.0
     # 用每一个交叉分割的块（训练集合，试集合）来评估BP算法
@@ -133,7 +133,7 @@ class BP_Network():
         self.test_label = test_label
         predicted = self.back_propagation(train_set, train_label, test_set)
         accuracy = self.accuracy_metric(test_label, predicted,code_num)
-        print('测试集整个验证码识别准确率为:', accuracy)
+        print('整个验证码识别准确率为:', accuracy)
 
 def normalize_dataset(dataset):
     for row in dataset:
@@ -143,6 +143,8 @@ def normalize_dataset(dataset):
 def main(filedir,setting=0):
     # 设置随机种子
     # 构建训练数据
+    starttime = datetime.datetime.now()
+    print('Start:\t\t' + starttime.strftime("%Y-%m-%d %X"))
     if setting:
         Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
         Data_set.data()
@@ -155,10 +157,14 @@ def main(filedir,setting=0):
     n_inputs = len(train_set[0])
     n_hidden = 8
     n_outputs = 10
-    BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=1)
-    l_rate = 1
+    BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=0)
+    l_rate = 2
     n_epoch = 0
     BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num=5)
     numpy.save(filedir+'weight_set.npy', BP.network)
+    endtime = datetime.datetime.now()
+    print('End:\t\t' + endtime.strftime("%Y-%m-%d %X"))
+    duringtime = endtime - starttime
+    print('Spend Time:\t' + str(duringtime))
 main(setting=0,filedir='./DataSet/')
 
