@@ -9,6 +9,7 @@ from random import random
 from math import exp
 import numpy
 from Dataset import Dataset
+from sklearn.model_selection import train_test_split
 class BP_Network():
     # 初始化神经网络
     def __init__(self, n_inputs, n_hidden, n_outputs, filedir,setting):
@@ -132,7 +133,7 @@ class BP_Network():
         self.test_label = test_label
         predicted = self.back_propagation(train_set, train_label, test_set)
         accuracy = self.accuracy_metric(test_label, predicted,code_num)
-        print('整个验证码识别准确率为:', accuracy)
+        print('测试集整个验证码识别准确率为:', accuracy)
 
 def normalize_dataset(dataset):
     for row in dataset:
@@ -143,14 +144,11 @@ def main(filedir,setting=0):
     # 设置随机种子
     # 构建训练数据
     if setting:
-        Train = Dataset(filedir, 'train', 1500,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
-        Train.data()
-        Test = Dataset(filedir, 'test', 500,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
-        Test.data()
-    train_set = numpy.load(filedir+'train_set.npy')
-    train_label = numpy.load(filedir+'train_label.npy')
-    test_set = numpy.load(filedir+'test_set.npy')
-    test_label = numpy.load(filedir+'test_label.npy')
+        Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
+        Data_set.data()
+    dataset = numpy.load(filedir+'set.npy')
+    label = numpy.load(filedir+'label.npy')
+    train_set, test_set, train_label, test_label = train_test_split(dataset, label, test_size=0.25)
     normalize_dataset(train_set)
     normalize_dataset(test_set)
     # 设置网络初始化参数
@@ -159,8 +157,8 @@ def main(filedir,setting=0):
     n_outputs = 10
     BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=1)
     l_rate = 1
-    n_epoch = 20
+    n_epoch = 0
     BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num=5)
     numpy.save(filedir+'weight_set.npy', BP.network)
-main(setting=0,filedir='D:/ANN/DataSet/')
+main(setting=0,filedir='./DataSet/')
 

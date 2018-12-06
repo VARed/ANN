@@ -15,9 +15,8 @@ class Dataset():
     #minx:横向起始位置
     #maxx:横向结束位置
     #distance:每个字符相差距离
-    def __init__(self,filedir,content,num,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24):
+    def __init__(self,filedir,num,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24):
         self.filedir=filedir
-        self.content=content
         self.num=num
         self.maxy=maxy
         self.miny=miny
@@ -46,7 +45,7 @@ class Dataset():
         data_set = numpy.zeros(shape=(self.num * self.code_num, self.feature_num))
         k = 0
         label = []
-        file_dir = self.filedir+self.content+'set'
+        file_dir = self.filedir+'Data'
         for file in os.listdir(file_dir):
             if fnmatch(file, '*.jpg'):
                 img_name = file
@@ -60,10 +59,11 @@ class Dataset():
                         data_set[k * self.code_num + i] = im[self.miny:self.maxy, i * self.distance + self.minx:i * self.distance + self.maxx].flatten()
                     label.append(int(img_name.split('.')[0][i]))
                 k = k + 1
-        numpy.save(self.filedir+self.content+'_label.npy', label)
-        print(self.content+'_label.npy'+'保存成功')
-        numpy.save(self.filedir+self.content+'_set.npy', data_set)
-        print(self.content + '_set.npy' + '保存成功')
+        numpy.save(self.filedir+'label.npy', label)
+        print('label.npy'+'保存成功')
+        numpy.save(self.filedir+'set.npy', data_set)
+        print('set.npy' + '保存成功')
+
     def interference_line(self,img):
         '''干扰线降噪'''
         h, w = img.shape[:2]
