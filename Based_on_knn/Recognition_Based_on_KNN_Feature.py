@@ -15,7 +15,7 @@ def main(filedir,k,setting=0):
     error=1
     corr=0
     if setting:
-        Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
+        Data_set = Dataset(filedir, 2220,feature_set=1,feature_num=5,code_num=4)
         Data_set.data()
     dataset = numpy.load(filedir+'set.npy')
     label = numpy.load(filedir+'label.npy')
@@ -35,4 +35,4 @@ def main(filedir,k,setting=0):
     print('End:\t\t' + endtime.strftime("%Y-%m-%d %X"))
     duringtime = endtime - starttime
     print('Spend Time:\t' + str(duringtime))
-main(k=13,setting=0,filedir='./DataSet/')
+main(k=13,setting=1,filedir='D:/Data/')

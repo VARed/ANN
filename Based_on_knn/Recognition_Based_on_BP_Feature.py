@@ -135,10 +135,6 @@ class BP_Network():
         accuracy = self.accuracy_metric(test_label, predicted,code_num)
         print('整个验证码识别准确率为:', accuracy)
 
-def normalize_dataset(dataset):
-    for row in dataset:
-        for i in range(len(row)):
-            row[i] = row[i] /255
 
 def main(filedir,setting=0):
     # 设置随机种子
@@ -146,20 +142,18 @@ def main(filedir,setting=0):
     starttime = datetime.datetime.now()
     print('Start:\t\t' + starttime.strftime("%Y-%m-%d %X"))
     if setting:
-        Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5,maxy=24,miny=5,maxx=17,minx=5,distance=24)
+        Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5)
         Data_set.data()
     dataset = numpy.load(filedir+'set.npy')
     label = numpy.load(filedir+'label.npy')
     train_set, test_set, train_label, test_label = train_test_split(dataset, label, test_size=0.25)
-    normalize_dataset(train_set)
-    normalize_dataset(test_set)
     # 设置网络初始化参数
     n_inputs = len(train_set[0])
     n_hidden = 8
     n_outputs = 10
-    BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=0)
+    BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=1)
     l_rate = 2
-    n_epoch = 0
+    n_epoch = 15
     BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num=5)
     numpy.save(filedir+'weight_set.npy', BP.network)
     endtime = datetime.datetime.now()
