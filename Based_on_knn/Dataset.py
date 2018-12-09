@@ -15,11 +15,10 @@ class Dataset():
     #minx:横向起始位置
     #maxx:横向结束位置
     #distance:每个字符相差距离
-    def __init__(self,filedir,num,feature_set=1,feature_num=5,code_num=5):
+    def __init__(self,filedir,num,feature_set=1,feature_num=5):
         self.filedir=filedir
         self.num=num
         self.feature_set=feature_set
-        self.code_num=code_num
         file_dir = self.filedir + 'Data'
         for file in os.listdir(file_dir):
             if fnmatch(file, '*.jpg'):
@@ -35,6 +34,7 @@ class Dataset():
             if fnmatch(file, '*.jpg'):
                 img_name = file
                 im = self._get_dynamic_binary_image(file_dir, img_name)
+                im = self.clear_border(im)
                 im = self.interference_line(im)
                 im = 1-im/255
                 k=k+1
@@ -66,6 +66,7 @@ class Dataset():
         self.maxx=int(xend[0])
         self.minx =int(xstart[0])
         self.distance = int(xstart[1]-xstart[0])
+        self.code_num = len(xstart)
         if feature_set==0:
             self.feature_num=(self.maxy-self.miny)*(self.maxx-self.minx)
         else:
@@ -91,6 +92,7 @@ class Dataset():
             if fnmatch(file, '*.jpg'):
                 img_name = file
                 im = self._get_dynamic_binary_image(file_dir, img_name)
+                im = self.clear_border(im)
                 im = self.interference_line(im)
                 for i in range(self.code_num):
                     if self.feature_set:
@@ -104,7 +106,6 @@ class Dataset():
         self.normalize_dataset(data_set)
         numpy.save(self.filedir+'set.npy', data_set)
         print('set.npy' + '保存成功')
-
     # 归一化函数
 
     def normalize_dataset(self,data_set):
@@ -131,6 +132,16 @@ class Dataset():
                     img[x, y] = 255
         return img
 
+    def clear_border(self,img):
+        '''去除边框'''
+        h, w = img.shape[:2]
+        for y in range(0, w):
+            for x in range(0, h):
+                if y < 4 or y > w - 4:
+                    img[x, y] = 255
+                if x < 4 or x > h - 4:
+                    img[x, y] = 255
+        return img
     def _get_dynamic_binary_image(self,file_dir, img_name):
         '''自适应阀值二值化'''
         img_name = file_dir + '/' + img_name

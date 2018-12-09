@@ -141,9 +141,10 @@ def main(filedir,setting=0):
     # 构建训练数据
     starttime = datetime.datetime.now()
     print('Start:\t\t' + starttime.strftime("%Y-%m-%d %X"))
+    Data_set = Dataset(filedir, 2000, feature_set=1, feature_num=5)
     if setting:
-        Data_set = Dataset(filedir, 2000,feature_set=1,feature_num=5,code_num=5)
         Data_set.data()
+    code_num=Data_set.code_num
     dataset = numpy.load(filedir+'set.npy')
     label = numpy.load(filedir+'label.npy')
     train_set, test_set, train_label, test_label = train_test_split(dataset, label, test_size=0.25)
@@ -154,11 +155,11 @@ def main(filedir,setting=0):
     BP = BP_Network(n_inputs, n_hidden, n_outputs, filedir,setting=1)
     l_rate = 2
     n_epoch = 15
-    BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num=5)
+    BP.evaluate_algorithm(train_set, train_label, test_set, test_label, l_rate, n_epoch,code_num)
     numpy.save(filedir+'weight_set.npy', BP.network)
     endtime = datetime.datetime.now()
     print('End:\t\t' + endtime.strftime("%Y-%m-%d %X"))
     duringtime = endtime - starttime
     print('Spend Time:\t' + str(duringtime))
-main(setting=0,filedir='./DataSet/')
+main(setting=0,filedir='./DataSet2/')
 
