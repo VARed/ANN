@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Based_on_knn.iml" filepath="$PROJECT_DIR$/.idea/Based_on_knn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Code_Recognition_By_SunWei.iml" filepath="$PROJECT_DIR$/.idea/Code_Recognition_By_SunWei.iml" />
+    </modules>
+  </component>
+</project>
